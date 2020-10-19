@@ -9,7 +9,6 @@ from .models import Note
 from .serializers import NoteSerializer
 
 class NoteViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdminUser]
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
 
     queryset = Note.objects.all()
