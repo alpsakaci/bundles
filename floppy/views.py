@@ -32,3 +32,8 @@ class NoteViewSet(viewsets.ModelViewSet):
 @login_required(login_url='/admin/login')
 def index(request):
     return render(request, 'floppy/index.html')
+
+@login_required(login_url='/admin/login')
+def new(request):
+    return render(request, 'floppy/new.html')
+
