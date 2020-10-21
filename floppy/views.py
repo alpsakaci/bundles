@@ -31,7 +31,10 @@ class NoteViewSet(viewsets.ModelViewSet):
 
 @login_required(login_url='/admin/login')
 def index(request):
-    return render(request, 'floppy/index.html')
+    notes = Note.objects.filter(owner = request.user).order_by('date_modified').reverse()
+    context = {'notes': notes}
+
+    return render(request, 'floppy/index.html', context)
 
 @login_required(login_url='/admin/login')
 def new(request):
