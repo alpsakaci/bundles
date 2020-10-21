@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.request import Request
 from .models import Note
+from datetime import datetime 
 
 class NoteSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -17,3 +18,10 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
         note.save()
 
         return note 
+
+    def update(self, instance, validated_data):        
+        updated_note = super().update(instance, validated_data)        
+        updated_note.date_modified = datetime.now()
+        updated_note.save()
+        
+        return updated_note
