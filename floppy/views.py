@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 from rest_framework import routers, serializers, viewsets
 from rest_framework.response import Response
@@ -26,3 +28,7 @@ class NoteViewSet(viewsets.ModelViewSet):
         serializer = NoteSerializer(note)
 
         return Response(serializer.data)
+
+@login_required(login_url='/admin/login')
+def index(request):
+    return render(request, 'floppy/index.html')
