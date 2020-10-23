@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -41,7 +43,7 @@ def index(request):
 def new(request):
     if request.method == 'POST':
         form = NoteForm(request.POST)
-        
+
         if form.is_valid():
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
@@ -55,11 +57,31 @@ def new(request):
 
     return render(request, 'floppy/new.html', context)
 
+@login_required(login_url='/admin/login')
 def edit(request, note_id):
-    note = get_object_or_404(Note.objects.filter(id=note_id))
-    context = {'note' : note}
+    if request.method == 'POST':
+        form = NoteForm(request.POST)
+
+        if form.is_valid():
+            note = get_object_or_404(Note.objects.filter(id=note_id))
+            # TODO: persist note to deleted notes
+            title = form.cleaned_data['title']
+            content = form.cleaned_data['content']
+            
+            note.title = title
+            note.content = content
+            note.date_modified = datetime.now()
+            note.save()
+
+            return redirect(index)
+    else:
+        note = get_object_or_404(Note.objects.filter(id=note_id))
+        form = NoteForm(initial={'title':note.title, 'content':note.content})
+        context = {'form': form, 'note':note}
+
     return render(request, 'floppy/edit.html', context)
 
+@login_required(login_url='/admin/login')
 def delete(request, note_id):
     # TODO: persist note to deleted notes
     note = get_object_or_404(Note.objects.filter(id=note_id))
