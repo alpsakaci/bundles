@@ -5,7 +5,7 @@
     <div class="container mt-4">
         <div class="row mx-auto">
         {% for note in notes %}
-            <div class="col-md-3 mx-auto m-3">
+            <div class="col-md-3 mx-auto m-3" onclick="window.location.href = 'edit/{{note.id}}/';">
             <div class="card m-2" style="background-color: whitesmoke; height: 300px;">
                 <div class="card-header">
                     <p class="font-weight-light small">

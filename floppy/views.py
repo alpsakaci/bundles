@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
 from rest_framework import routers, serializers, viewsets
@@ -39,4 +39,16 @@ def index(request):
 @login_required(login_url='/admin/login')
 def new(request):
     return render(request, 'floppy/new.html')
+
+def edit(request, note_id):
+    note = get_object_or_404(Note.objects.filter(id=note_id))
+    context = {'note' : note}
+    return render(request, 'floppy/edit.html', context)
+
+def delete(request, note_id):
+    # TODO: persist note to deleted notes
+    note = get_object_or_404(Note.objects.filter(id=note_id))
+    note.delete()
+
+    return redirect(index)
 
