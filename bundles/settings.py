@@ -42,6 +42,14 @@ INSTALLED_APPS = [
     'rest_framework',
 ]
 
+CKEDITOR_CONFIGS = {
+    'default': {
+        'width': '100%',
+        'filebrowserWindowWidth' : '100%',
+        "removePlugins": "flash",
+    }
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

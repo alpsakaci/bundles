@@ -4,8 +4,8 @@ from ckeditor.widgets import CKEditorWidget
 from .models import Note
 
 class NoteForm(forms.ModelForm):
-    title = forms.CharField(label='Title', max_length=20)
-    content = forms.CharField(widget=CKEditorWidget())
+    title = forms.CharField(label='Title', max_length=20, widget=forms.TextInput(attrs={'class': "form-control mb-3"}), required=False)
+    content = forms.CharField(label='', widget=CKEditorWidget())
 
     class Meta:
         model = Note
