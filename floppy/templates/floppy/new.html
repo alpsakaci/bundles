@@ -3,7 +3,11 @@
 {% block body %}
 
     <div class="container mt-4">
-        new
+        <form method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Submit">
+        </form>
     </div>
 
 {% endblock body %}

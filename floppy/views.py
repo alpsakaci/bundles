@@ -9,6 +9,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 
 from .models import Note
 from .serializers import NoteSerializer
+from .forms import NoteForm
 
 class NoteViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
@@ -38,7 +39,21 @@ def index(request):
 
 @login_required(login_url='/admin/login')
 def new(request):
-    return render(request, 'floppy/new.html')
+    if request.method == 'POST':
+        form = NoteForm(request.POST)
+        
+        if form.is_valid():
+            title = form.cleaned_data['title']
+            content = form.cleaned_data['content']
+            new_note = Note(owner=request.user, title=title, content=content)
+            new_note.save()
+
+            return redirect(index)
+    else:
+        form = NoteForm()
+        context = {'form': form}
+
+    return render(request, 'floppy/new.html', context)
 
 def edit(request, note_id):
     note = get_object_or_404(Note.objects.filter(id=note_id))
