@@ -15,7 +15,7 @@
                 </div>
                 <div class="card-body">
                 {{ note.title | truncatechars_html:20 }}
-                    <p class="card-text font-weight-light">{{ note.content | truncatechars_html:150 }}</p>
+                    <p class="card-text font-weight-light">{{ note.content | truncatechars_html:150 | safe }}</p>
                 </div>
                 </div>
             </div>
