@@ -7,9 +7,9 @@ router = routers.DefaultRouter()
 router.register(r'notes', views.NoteViewSet, basename='note')
 
 urlpatterns = [
-    path('', views.index),
-    path('new/', views.new),
-    path('edit/<int:note_id>/', views.edit),
-    path('delete/<int:note_id>/', views.delete),
+    path('', views.index, name='index'),
+    path('newnote/', views.new, name='newnote'),
+    path('editnote/<int:note_id>/', views.edit, name='editnote'),
+    path('deletenote/<int:note_id>/', views.delete, name='deletenote'),
     path('api/', include(router.urls)),
 ]

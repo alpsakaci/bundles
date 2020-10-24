@@ -3,7 +3,7 @@
 {% block body %}
 
 <div class="container mt-4">
-    <a href="/floppy/delete/{{ note.id }}/" onclick="return confirm('Are you sure?');" class="btn btn-danger">delete</a>
+    <a href="{% url 'deletenote' note.id %}" onclick="return confirm('Are you sure?');" class="btn btn-danger">delete</a>
     <p>
         Date Modified: {{ note.date_modified }} </br>
         Date Created: {{ note.date_created }} </br>
