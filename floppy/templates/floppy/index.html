@@ -6,13 +6,10 @@
     <form action="{% url 'searchnote' %}" method="post">
         {% csrf_token %}
         {{ search_form }}
-        <div>
-            {% comment %} <button type="submit" class="btn btn-success w-100">search</button> {% endcomment %}
-        </div>
-        {% if search_result != null %}
-            Search Result: {{ search_result }} note found.
-        {% endif %}
     </form>
+    {% if search_result != null %}
+        Search Result: {{ search_result }} note found.
+    {% endif %}
     <div class="row mx-auto">
         {% for note in notes %}
         <div class="col-md-3 mx-auto m-3" onclick="window.location.href = '{% url 'editnote' note.id %}';">
