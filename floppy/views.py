@@ -3,6 +3,7 @@ from datetime import datetime
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 from rest_framework import routers, serializers, viewsets
 from rest_framework.response import Response
@@ -11,7 +12,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 
 from .models import Note
 from .serializers import NoteSerializer
-from .forms import NoteForm
+from .forms import NoteForm, SearchForm
 
 class NoteViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
@@ -35,7 +36,8 @@ class NoteViewSet(viewsets.ModelViewSet):
 @login_required(login_url='/admin/login')
 def index(request):
     notes = Note.objects.filter(owner = request.user).order_by('date_modified').reverse()
-    context = {'notes': notes}
+    form = SearchForm()
+    context = {'notes': notes, 'search_form': form}
 
     return render(request, 'floppy/index.html', context)
 
@@ -89,3 +91,15 @@ def delete(request, note_id):
 
     return redirect(index)
 
+@login_required(login_url='/admin/login')
+def search(request):
+    form = SearchForm(request.POST)
+    search_result = []
+    if request.method == 'POST':
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            search_result = Note.objects.filter(Q(owner=request.user) & (Q(title__icontains=query) | Q(content__icontains=query)))
+            context = {'notes': search_result, 'search_form': form, 'search_result': len(search_result)}
+            return render(request, 'floppy/index.html', context)
+
+    return redirect(index)

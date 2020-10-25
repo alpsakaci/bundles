@@ -10,3 +10,6 @@ class NoteForm(forms.ModelForm):
     class Meta:
         model = Note
         fields = ['title', 'content']
+
+class SearchForm(forms.Form):
+    query = forms.CharField(label='', widget=forms.TextInput(attrs={'class': "form-control mb-3", 'placeholder':"Search Note"}))
