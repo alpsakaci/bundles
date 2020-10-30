@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 
-from .models import Note
+from .models import Note, NoteLog
 from .serializers import NoteSerializer
 from .forms import NoteForm, SearchForm
 
@@ -66,7 +66,10 @@ def edit(request, note_id):
 
         if form.is_valid():
             note = get_object_or_404(Note.objects.filter(id=note_id))
-            # TODO: persist note to deleted notes
+            notelog = NoteLog()
+            notelog.set_log(note)
+            notelog.save()
+
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
             
@@ -85,8 +88,10 @@ def edit(request, note_id):
 
 @login_required(login_url='/admin/login')
 def delete(request, note_id):
-    # TODO: persist note to deleted notes
     note = get_object_or_404(Note.objects.filter(id=note_id))
+    notelog = NoteLog()
+    notelog.set_log(note)
+    notelog.save()
     note.delete()
 
     return redirect(index)
