@@ -67,8 +67,7 @@ def edit(request, note_id):
         if form.is_valid():
             note = get_object_or_404(Note.objects.filter(id=note_id))
             notelog = NoteLog()
-            notelog.set_log(note)
-            notelog.save()
+            notelog.init_log(note, 1)
 
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
@@ -76,7 +75,10 @@ def edit(request, note_id):
             note.title = title
             note.content = content
             note.date_modified = datetime.now()
+            
             note.save()
+            notelog.set_log(note)
+            notelog.save()
 
             return redirect(index)
     else:
@@ -90,7 +92,7 @@ def edit(request, note_id):
 def delete(request, note_id):
     note = get_object_or_404(Note.objects.filter(id=note_id))
     notelog = NoteLog()
-    notelog.set_log(note)
+    notelog.init_log(note, 2)
     notelog.save()
     note.delete()
 
