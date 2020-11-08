@@ -22,6 +22,14 @@ class Note(models.Model):
     date_modified = models.DateTimeField(default=datetime.now, blank=True)
 
     @staticmethod
+    def create(owner, title, content):
+        return Note.objects.create(owner=owner, title=title, content=content)
+
+    @staticmethod
+    def get_user_notes(user):
+        return Note.objects.filter(owner = user).order_by('date_modified').reverse()
+    
+    @staticmethod
     def search(user, query):
         return Note.objects.filter(Q(owner=user) & (Q(title__icontains=query) | Q(content__icontains=query)))
 

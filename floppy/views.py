@@ -35,7 +35,7 @@ class NoteViewSet(viewsets.ModelViewSet):
 
 @login_required(login_url='/admin/login')
 def index(request):
-    notes = Note.objects.filter(owner = request.user).order_by('date_modified').reverse()
+    notes = Note.get_user_notes(request.user)
     form = SearchForm()
     context = {'notes': notes, 'search_form': form}
 
@@ -49,7 +49,7 @@ def new(request):
         if form.is_valid():
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
-            new_note = Note(owner=request.user, title=title, content=content)
+            new_note = Note.create(owner=request.user, title=title, content=content)
             new_note.save()
 
             return redirect(index)
