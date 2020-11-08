@@ -4,6 +4,7 @@ from ckeditor.fields import RichTextField
 from datetime import datetime  
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
+from django.db.models import Q
 
 CHANGE = 1
 DELETION = 2
@@ -19,6 +20,10 @@ class Note(models.Model):
     content = RichTextField()
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(default=datetime.now, blank=True)
+
+    @staticmethod
+    def search(user, query):
+        return Note.objects.filter(Q(owner=user) & (Q(title__icontains=query) | Q(content__icontains=query)))
 
     def __str__(self):
         str = ""
