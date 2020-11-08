@@ -105,7 +105,7 @@ def search(request):
     if request.method == 'POST':
         if form.is_valid():
             query = form.cleaned_data['query']
-            search_result = Note.objects.filter(Q(owner=request.user) & (Q(title__icontains=query) | Q(content__icontains=query)))
+            search_result = Note.search(request.user, query)
             context = {'notes': search_result, 'search_form': form, 'search_result': len(search_result)}
             return render(request, 'floppy/index.html', context)
 
