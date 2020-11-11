@@ -24,7 +24,10 @@ class Note(models.Model):
 
     @staticmethod
     def create(owner, title, content):
-        return Note.objects.create(owner=owner, title=title, content=content)
+        note = Note.objects.create(owner=owner, title=title, content=content)
+        caretaker = NoteCareTaker(note=note)
+        caretaker.save()
+        return note
 
     @staticmethod
     def get_user_notes(user):
@@ -71,3 +74,21 @@ class NoteLog(models.Model):
             str = str + "Title: " + self.title + " | "
         str = str + "Content: " + self.content
         return str
+
+class NoteCareTaker(models.Model):
+
+    note = models.OneToOneField(
+        Note,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+    
+    def add(self, memento):
+        memento.care_taker = self
+        memento.save()
+
+class NoteMemento(models.Model):
+    title = models.CharField(max_length=50, blank=True, null=True)
+    content = RichTextField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    care_taker = models.ForeignKey(NoteCareTaker, on_delete=models.CASCADE)
