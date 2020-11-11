@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Note, NoteLog, NoteCareTaker, NoteMemento
+from .models import Note, NoteCareTaker, NoteMemento
 from .forms import NoteForm
 
 class NoteAdmin(admin.ModelAdmin):

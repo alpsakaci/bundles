@@ -44,37 +44,6 @@ class Note(models.Model):
         str = str + "Content: " + self.content
         return str
 
-class NoteLog(models.Model):
-    action_time = models.DateTimeField(
-        _('action time'),
-        default=timezone.now,
-        editable=False,
-    )
-    action_flag = models.PositiveSmallIntegerField(_('action flag'), choices=ACTION_FLAG_CHOICES)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50, blank=True, null=True)
-    content = RichTextField()
-    change_title = models.CharField(max_length=50, blank=True, null=True)
-    change_content = RichTextField(blank=True, null=True)
-
-    def init_log(self, note, action_flag):
-        self.action_flag = action_flag
-        self.owner = note.owner
-        self.title = note.title
-        self.content = note.content
-
-    def set_log(self, note):
-        if (self.action_flag != 2):
-            self.change_title = note.title
-            self.change_content = note.content
-
-    def __str__(self):
-        str = ""
-        if (self.title != ""):
-            str = str + "Title: " + self.title + " | "
-        str = str + "Content: " + self.content
-        return str
-
 class NoteCareTaker(models.Model):
 
     note = models.OneToOneField(
