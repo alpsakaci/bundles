@@ -20,6 +20,7 @@ class Note(models.Model):
     content = RichTextField()
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(default=datetime.now, blank=True)
+    deleted = models.BooleanField(default=False)
 
     @staticmethod
     def create(owner, title, content):
