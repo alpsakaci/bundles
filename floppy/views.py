@@ -87,11 +87,17 @@ def edit(request, note_id):
 
     return render(request, "floppy/edit.html", context)
 
+@login_required(login_url="/admin/login")
+def movetotrash(request, note_id):
+    note = get_object_or_404(Note.objects.filter(id=note_id, owner=request.user))
+    note.move_to_trash()
+
+    return redirect(index)
 
 @login_required(login_url="/admin/login")
 def delete(request, note_id):
     note = get_object_or_404(Note.objects.filter(id=note_id, owner=request.user))
-    note.move_to_trash()
+    note.delete()
 
     return redirect(index)
 
