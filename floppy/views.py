@@ -76,12 +76,12 @@ def edit(request, note_id):
         form = NoteForm(request.POST)
 
         if form.is_valid():
-            note = get_object_or_404(Note.objects.filter(id=note_id))
+            note = get_object_or_404(Note.objects.filter(id=note_id, owner=request.user))
             note.edit(form.cleaned_data["title"], form.cleaned_data["content"])
 
             return redirect(index)
     else:
-        note = get_object_or_404(Note.objects.filter(id=note_id))
+        note = get_object_or_404(Note.objects.filter(id=note_id, owner=request.user))
         form = NoteForm(initial={"title": note.title, "content": note.content})
         context = {"form": form, "note": note}
 
@@ -90,11 +90,17 @@ def edit(request, note_id):
 
 @login_required(login_url="/admin/login")
 def delete(request, note_id):
-    note = get_object_or_404(Note.objects.filter(id=note_id))
+    note = get_object_or_404(Note.objects.filter(id=note_id, owner=request.user))
     note.move_to_trash()
 
     return redirect(index)
 
+@login_required(login_url="/admin/login")
+def restore(request, note_id):
+    note = get_object_or_404(Note.objects.filter(id=note_id, owner=request.user))
+    note.restore()
+
+    return redirect(index)
 
 @login_required(login_url="/admin/login")
 def search(request):

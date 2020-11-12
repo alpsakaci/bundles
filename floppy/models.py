@@ -34,6 +34,10 @@ class Note(models.Model):
         self.deleted = True
         self.save()
 
+    def restore(self):
+        self.deleted = False
+        self.save()
+
     @staticmethod
     def get_user_notes(user):
         return Note.objects.filter(owner=user, deleted=False).order_by("date_modified").reverse()
