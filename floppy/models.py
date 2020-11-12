@@ -17,17 +17,29 @@ class Note(models.Model):
     def create(owner, title, content):
         note = Note.objects.create(owner=owner, title=title, content=content)
         caretaker = NoteCareTaker(note=note)
+        note.save()
         caretaker.save()
+
         return note
+
+    def edit(self, title, content):
+        self.title = title
+        self.content = content
+        self.date_modified = datetime.now()
+        self.save()
+
+    def move_to_trash(self):
+        self.deleted = True
+        self.save()
 
     @staticmethod
     def get_user_notes(user):
-        return Note.objects.filter(owner=user).order_by("date_modified").reverse()
+        return Note.objects.filter(owner=user, deleted=False).order_by("date_modified").reverse()
 
     @staticmethod
     def search(user, query):
         return Note.objects.filter(
-            Q(owner=user) & (Q(title__icontains=query) | Q(content__icontains=query))
+            Q(owner=user) & Q(deleted=False) & (Q(title__icontains=query) | Q(content__icontains=query))
         )
 
     def __str__(self):

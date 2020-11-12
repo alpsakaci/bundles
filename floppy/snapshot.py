@@ -2,16 +2,12 @@ from .models import NoteMemento
 
 
 class NoteOriginator:
-    _state = None
 
-    def __init__(self, state):
-        self._state = state
-
-    def get_state(self):
-        return self._state
+    def __init__(self, note):
+        self.note = note
 
     def save_state_to_memento(self):
-        return NoteMemento(self._state)
+        return NoteMemento(title=self.note.title, content=self.note.title)
 
     def get_state_from_memento(self, memento):
-        self._state = memento.get_state()
+        return (memento.title, memento.content)

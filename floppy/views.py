@@ -60,8 +60,7 @@ def new(request):
         if form.is_valid():
             title = form.cleaned_data["title"]
             content = form.cleaned_data["content"]
-            new_note = Note.create(owner=request.user, title=title, content=content)
-            new_note.save()
+            Note.create(owner=request.user, title=title, content=content)
 
             return redirect(index)
     else:
@@ -78,10 +77,7 @@ def edit(request, note_id):
 
         if form.is_valid():
             note = get_object_or_404(Note.objects.filter(id=note_id))
-            note.title = form.cleaned_data["title"]
-            note.content = form.cleaned_data["content"]
-            note.date_modified = datetime.now()
-            note.save()
+            note.edit(form.cleaned_data["title"], form.cleaned_data["content"])
 
             return redirect(index)
     else:
@@ -95,7 +91,7 @@ def edit(request, note_id):
 @login_required(login_url="/admin/login")
 def delete(request, note_id):
     note = get_object_or_404(Note.objects.filter(id=note_id))
-    note.delete()
+    note.move_to_trash()
 
     return redirect(index)
 
