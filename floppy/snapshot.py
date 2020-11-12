@@ -1,6 +1,7 @@
 from .models import NoteMemento
 
-class NoteOriginator():
+
+class NoteOriginator:
     _state = None
 
     def __init__(self, state):
@@ -14,4 +15,3 @@ class NoteOriginator():
 
     def get_state_from_memento(self, memento):
         self._state = memento.get_state()
-

@@ -1,18 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
-from datetime import datetime  
-from django.utils import timezone
-from django.utils.translation import gettext, gettext_lazy as _
+from datetime import datetime
 from django.db.models import Q
 
-CHANGE = 1
-DELETION = 2
-
-ACTION_FLAG_CHOICES = (
-    (CHANGE, _('Change')),
-    (DELETION, _('Deletion')),
-)
 
 class Note(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -31,30 +22,33 @@ class Note(models.Model):
 
     @staticmethod
     def get_user_notes(user):
-        return Note.objects.filter(owner = user).order_by('date_modified').reverse()
-    
+        return Note.objects.filter(owner=user).order_by("date_modified").reverse()
+
     @staticmethod
     def search(user, query):
-        return Note.objects.filter(Q(owner=user) & (Q(title__icontains=query) | Q(content__icontains=query)))
+        return Note.objects.filter(
+            Q(owner=user) & (Q(title__icontains=query) | Q(content__icontains=query))
+        )
 
     def __str__(self):
         str = ""
-        if (self.title != ""):
+        if self.title != "":
             str = str + "Title: " + self.title + " | "
         str = str + "Content: " + self.content
         return str
 
-class NoteCareTaker(models.Model):
 
+class NoteCareTaker(models.Model):
     note = models.OneToOneField(
         Note,
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    
+
     def add(self, memento):
         memento.care_taker = self
         memento.save()
+
 
 class NoteMemento(models.Model):
     title = models.CharField(max_length=50, blank=True, null=True)
