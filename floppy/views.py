@@ -112,3 +112,11 @@ def search(request):
             return render(request, "floppy/index.html", context)
 
     return redirect(index)
+
+@login_required(login_url="/admin/login")
+def trash(request):
+    deleted_notes = Note.get_deleted_notes(request.user)
+    form = SearchForm()
+    context = {"notes": deleted_notes}
+
+    return render(request, "floppy/index.html", context)

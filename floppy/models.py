@@ -39,6 +39,10 @@ class Note(models.Model):
         return Note.objects.filter(owner=user, deleted=False).order_by("date_modified").reverse()
 
     @staticmethod
+    def get_deleted_notes(user):
+        return Note.objects.filter(owner=user, deleted=True).order_by("date_modified").reverse()
+
+    @staticmethod
     def search(user, query):
         return Note.objects.filter(
             Q(owner=user) & Q(deleted=False) & (Q(title__icontains=query) | Q(content__icontains=query))

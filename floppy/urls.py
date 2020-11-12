@@ -12,5 +12,6 @@ urlpatterns = [
     path("editnote/<int:note_id>/", views.edit, name="editnote"),
     path("deletenote/<int:note_id>/", views.delete, name="deletenote"),
     path("searchnote/", views.search, name="searchnote"),
+    path("trash/", views.trash, name="trash"),
     path("api/", include(router.urls)),
 ]
