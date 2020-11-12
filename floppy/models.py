@@ -1,16 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
-from datetime import datetime
+from django.utils import timezone
 from django.db.models import Q
-
+from floppy.snapshot import NoteOriginator
 
 class Note(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=50, blank=True, null=True)
     content = RichTextField()
     date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(default=datetime.now, blank=True)
+    date_modified = models.DateTimeField(default=timezone.now, blank=True)
     deleted = models.BooleanField(default=False)
 
     @staticmethod
@@ -23,9 +23,11 @@ class Note(models.Model):
         return note
 
     def edit(self, title, content):
+        NoteOriginator.take_snapshot(note=self)
+
         self.title = title
         self.content = content
-        self.date_modified = datetime.now()
+        self.date_modified = timezone.now()
         self.save()
 
     def move_to_trash(self):
