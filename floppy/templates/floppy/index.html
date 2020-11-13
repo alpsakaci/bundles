@@ -10,6 +10,9 @@
     {% if search_result != null %}
         Search Result: {{ search_result }} note found.
     {% endif %}
+    {% if request.path == '/floppy/trash/' %}
+        Trash
+    {% endif %}
     <div class="row mx-auto">
         {% for note in notes %}
         <div class="col-md-3 mx-auto m-3" onclick="window.location.href = '{% url 'editnote' note.id %}';">
