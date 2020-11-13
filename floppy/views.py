@@ -14,7 +14,7 @@ from rest_framework.authentication import (
     TokenAuthentication,
 )
 
-from .models import Note
+from .models import Note, NoteCareTaker, NoteMemento
 from .serializers import NoteSerializer
 from .forms import NoteForm, SearchForm
 
@@ -76,7 +76,9 @@ def edit(request, note_id):
         form = NoteForm(request.POST)
 
         if form.is_valid():
-            note = get_object_or_404(Note.objects.filter(id=note_id, owner=request.user))
+            note = get_object_or_404(
+                Note.objects.filter(id=note_id, owner=request.user)
+            )
             note.edit(form.cleaned_data["title"], form.cleaned_data["content"])
 
             return redirect(index)
@@ -87,12 +89,14 @@ def edit(request, note_id):
 
     return render(request, "floppy/edit.html", context)
 
+
 @login_required(login_url="/admin/login")
 def movetotrash(request, note_id):
     note = get_object_or_404(Note.objects.filter(id=note_id, owner=request.user))
     note.move_to_trash()
 
     return redirect(index)
+
 
 @login_required(login_url="/admin/login")
 def delete(request, note_id):
@@ -101,12 +105,22 @@ def delete(request, note_id):
 
     return redirect(index)
 
+
 @login_required(login_url="/admin/login")
 def restore(request, note_id):
     note = get_object_or_404(Note.objects.filter(id=note_id, owner=request.user))
     note.restore()
 
     return redirect(index)
+
+
+@login_required(login_url="/admin/login")
+def browseversions(request, note_id):
+    older_versions = Note.get_older_versions(request.user, note_id)
+    context = {"notes": older_versions}
+
+    return render(request, "floppy/index.html", context)
+
 
 @login_required(login_url="/admin/login")
 def search(request):
@@ -124,6 +138,7 @@ def search(request):
             return render(request, "floppy/index.html", context)
 
     return redirect(index)
+
 
 @login_required(login_url="/admin/login")
 def trash(request):

@@ -4,6 +4,8 @@ from ckeditor.fields import RichTextField
 from django.utils import timezone
 from django.db.models import Q
 from floppy.snapshot import NoteOriginator
+from django.shortcuts import get_object_or_404
+
 
 class Note(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -40,16 +42,38 @@ class Note(models.Model):
 
     @staticmethod
     def get_user_notes(user):
-        return Note.objects.filter(owner=user, deleted=False).order_by("date_modified").reverse()
+        return (
+            Note.objects.filter(owner=user, deleted=False)
+            .order_by("date_modified")
+            .reverse()
+        )
 
     @staticmethod
     def get_deleted_notes(user):
-        return Note.objects.filter(owner=user, deleted=True).order_by("date_modified").reverse()
+        return (
+            Note.objects.filter(owner=user, deleted=True)
+            .order_by("date_modified")
+            .reverse()
+        )
+
+    @staticmethod
+    def get_older_versions(user, note_id):
+        note = get_object_or_404(Note.objects.filter(id=note_id, owner=user))
+        care_taker = NoteCareTaker.objects.get(note=note)
+        memento_list = (
+            NoteMemento.objects.filter(care_taker=care_taker)
+            .order_by("date_created")
+            .reverse()
+        )
+
+        return memento_list
 
     @staticmethod
     def search(user, query):
         return Note.objects.filter(
-            Q(owner=user) & Q(deleted=False) & (Q(title__icontains=query) | Q(content__icontains=query))
+            Q(owner=user)
+            & Q(deleted=False)
+            & (Q(title__icontains=query) | Q(content__icontains=query))
         )
 
     def __str__(self):

@@ -13,6 +13,7 @@
         <a href="{% url 'restorenote' note.id %}" onclick="return confirm('Note will be restored. Are you sure?');"
             class="btn btn-primary">restore</a>
     {% endif %}
+        <a href="{% url 'browseversions' note.id %}" class="btn btn-primary">browse versions</a>
     <p>
         Date Modified: {{ note.date_modified }} </br>
         Date Created: {{ note.date_created }} </br>
