@@ -14,7 +14,7 @@ from rest_framework.authentication import (
     TokenAuthentication,
 )
 
-from .models import Note, NoteCareTaker, NoteMemento
+from .models import Note
 from .serializers import NoteSerializer
 from .forms import NoteForm, SearchForm
 
@@ -116,10 +116,19 @@ def restore(request, note_id):
 
 @login_required(login_url="/admin/login")
 def browseversions(request, note_id):
+    note = get_object_or_404(Note.objects.filter(id=note_id, owner=request.user))
     older_versions = Note.get_older_versions(request.user, note_id)
-    context = {"notes": older_versions}
+    context = {"note": note, "older_versions": older_versions}
 
-    return render(request, "floppy/index.html", context)
+    return render(request, "floppy/versions.html", context)
+
+
+@login_required(login_url="/admin/login")
+def revert(request, note_id, memento_id):
+    note = get_object_or_404(Note.objects.filter(id=note_id, owner=request.user))
+    note.revert(memento_id)
+
+    return redirect(index)
 
 
 @login_required(login_url="/admin/login")

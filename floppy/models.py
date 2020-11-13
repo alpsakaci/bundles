@@ -40,6 +40,20 @@ class Note(models.Model):
         self.deleted = False
         self.save()
 
+    def revert(self, memento_id):
+        care_taker = NoteCareTaker.objects.get(note=self)
+        memento = get_object_or_404(
+            NoteMemento.objects.filter(id=memento_id, care_taker=care_taker)
+        )
+        NoteOriginator.take_snapshot(note=self)
+        self.title = memento.title
+        self.content = memento.content
+        self.date_modified = timezone.now()
+        if self.deleted == True:
+            self.deleted = False
+        self.save()
+        memento.delete()
+
     @staticmethod
     def get_user_notes(user):
         return (

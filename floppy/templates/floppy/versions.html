@@ -1,0 +1,35 @@
+{% extends 'floppy/base.html' %}
+
+{% block body %}
+
+<div class="container mt-4">
+    <form action="{% url 'searchnote' %}" method="post">
+        {% csrf_token %}
+        {{ search_form }}
+    </form>
+    {% if search_result != null %}
+        Search Result: {{ search_result }} note found.
+    {% endif %}
+    Older Versions
+    <div class="row mx-auto">
+        {% for version in older_versions %}
+        <div class="col-md-3 mx-auto m-3">
+            <div class="card m-2" style="background-color: whitesmoke; height: 300px;">
+                <div class="card-header">
+                    <p class="font-weight-light small">
+                        C: {{ version.date_created }}
+                        <a href="{% url 'revertnote' note.id version.id %}" onclick="return confirm('Note will be reverted to this version. Are you sure?');"
+                            class="btn btn-primary">Revert to this version.</a>
+                    </p>
+                </div>
+                <div class="card-body">
+                    {{ version.title | truncatechars_html:20 }}
+                    <p class="card-text font-weight-light">{{ version.content | truncatechars_html:150 | safe }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock body %}
