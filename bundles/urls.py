@@ -19,7 +19,6 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path("", include("rest_framework.urls", namespace="rest_framework")),
     path("floppy/", include("floppy.urls")),
     path("secretpass/", include("secretpass.urls")),
     path("admin/", admin.site.urls),
