@@ -18,4 +18,5 @@ class AccountViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
+        # override post
         serializer.save(owner=self.request.user)
