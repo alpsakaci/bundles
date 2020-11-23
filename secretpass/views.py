@@ -2,33 +2,28 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework import permissions
+from rest_framework.response import Response
 from .models import Account
 from .serializers import UserSerializer, AccountSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by("-date_joined")
+    queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
-    # TODO: impl
-    def list(self, request):
-        pass
+    def get_permissions(self):
+        if self.action == "create":
+            permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
     def create(self, request):
-        pass
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = User.objects.create_user(**serializer.validated_data)
 
-    def retrieve(self, request, pk=None):
-        pass
-
-    def update(self, request, pk=None):
-        pass
-
-    def partial_update(self, request, pk=None):
-        pass
-
-    def destroy(self, request, pk=None):
-        pass
+        return Response(serializer.data)
 
 
 class AccountViewSet(viewsets.ModelViewSet):
