@@ -18,12 +18,20 @@ class UserViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.IsAuthenticated]
         return [permission() for permission in permission_classes]
 
-    def create(self, request):
-        serializer = UserSerializer(data=request.data)
+    def perform_create(self, serializer):
         serializer.is_valid(raise_exception=True)
         user = User.objects.create_user(**serializer.validated_data)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, pk=None, *args, **kwargs):
+        super().update(request)
+        user = User.objects.get(id=pk)
+        user.set_password(request.data["password"])
+        user.save()
+        serializer = UserSerializer(user)
+
+        return Response(serializer.data)
 
 
 class AccountViewSet(viewsets.ModelViewSet):
