@@ -3,8 +3,11 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework import permissions, status
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from .models import Account
 from .serializers import UserSerializer, AccountSerializer
+import string
+import random
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -42,3 +45,14 @@ class AccountViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # override post
         serializer.save(owner=self.request.user)
+
+@api_view(['POST'])
+def generate_password(request):
+    characters = string.ascii_letters + string.digits
+    password = ''
+    for i in range(20):
+        if (i+1)%7==0:
+            password = password + ''.join('-')
+        else:
+            password = password + ''.join(random.choice(characters))
+    return Response({'password' : password})
