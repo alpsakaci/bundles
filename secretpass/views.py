@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.shortcuts import get_object_or_404
 from .models import Account
 from .serializers import UserSerializer, AccountSerializer
 import string
@@ -41,6 +42,19 @@ class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def list(self, request):
+        queryset = Account.objects.filter(owner = request.user)
+        serializer = AccountSerializer(queryset, many=True, context={'request': request})
+
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = Account.objects.filter(owner = request.user)
+        account = get_object_or_404(queryset, pk=pk)
+        serializer = AccountSerializer(account, context={'request': request})
+
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         # override post
