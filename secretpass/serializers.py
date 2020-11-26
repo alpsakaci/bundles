@@ -23,6 +23,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AccountSerializer(serializers.HyperlinkedModelSerializer):
+    password = serializers.CharField(required=True, write_only=True)
+
     class Meta:
         model = Account
         fields = ["url", "service", "username", "password"]
