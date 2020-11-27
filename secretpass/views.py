@@ -65,6 +65,16 @@ class AccountViewSet(viewsets.ModelViewSet):
         serializer.validated_data["password"] = encrypt_password(password)
         serializer.save(owner=self.request.user)
 
+    def update(self, request, pk=None, *args, **kwargs):
+        queryset = Account.objects.filter(owner=request.user)
+        account = get_object_or_404(queryset, pk=pk)
+        super().update(request)
+        account.password = encrypt_password(request.data["password"])
+        account.save()
+        serializer = AccountSerializer(account, context={'request': request})
+
+        return Response(serializer.data)
+
     @action(detail=True, methods=["POST"])
     def decrypt_password(self, request, pk=None):
         user = request.user
