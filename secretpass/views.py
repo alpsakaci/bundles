@@ -70,7 +70,10 @@ class AccountViewSet(viewsets.ModelViewSet):
         user = request.user
         account = self.get_object()
         if account.owner == user:
-            load = {"plain_password": decrypt_password(account.password)}
+            load = {
+                "status" : status.HTTP_200_OK,
+                "plain_password": decrypt_password(account.password)
+            }
         else:
             raise PermissionDenied
 

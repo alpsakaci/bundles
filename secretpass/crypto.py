@@ -1,28 +1,29 @@
 from Crypto.Cipher import AES
 from base64 import b64encode, b64decode
-from Crypto.Util.Padding import pad, unpad
 import secretpass.settings as settings
+
 
 def encrypt_password(password):
     data = bytes(password, encoding="utf-8")
-    key_str = settings.SP_PASSPHRASE
-    key = bytes(key_str, encoding="utf-8")
-    cipher = AES.new(key, AES.MODE_CBC)
-    ct_bytes = cipher.encrypt(pad(data, AES.block_size))
-    iv = b64encode(cipher.iv).decode("utf-8")
-    ct = b64encode(ct_bytes).decode("utf-8")
-    
-    return iv + ct
-    
+    key = bytes(settings.SP_PASSPHRASE, encoding="utf-8")
+    cipher = AES.new(key, AES.MODE_GCM)
+    ciphertext, tag = cipher.encrypt_and_digest(data)
+    nonce = b64encode(cipher.nonce).decode("utf-8")
+    tag = b64encode(tag).decode("utf-8")
+    ciphertext = b64encode(ciphertext).decode("utf-8")
+
+    return nonce + tag + ciphertext
+
 
 def decrypt_password(password):
     try:
-        iv = b64decode(password[:24])
-        ct = b64decode(password[24:])
-        key_str = settings.SP_PASSPHRASE
-        key = bytes(key_str, encoding="utf-8")
-        cipher = AES.new(key, AES.MODE_CBC, iv)
-        pt = unpad(cipher.decrypt(ct), AES.block_size)
-        return pt
+        key = bytes(settings.SP_PASSPHRASE, encoding="utf-8")
+        nonce = b64decode(password[:24])
+        tag = b64decode(password[24:48])
+        ciphertext = b64decode(password[48:])
+        cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+        plaintext = cipher.decrypt_and_verify(ciphertext, tag)
+
+        return plaintext
     except:
         return None
