@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from .models import Account
 from .crypto import encrypt_password, decrypt_password
 from .serializers import UserSerializer, AccountSerializer
+from .permissions import IsOwner
 import string
 import random
 
@@ -43,7 +44,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (IsOwner, permissions.IsAuthenticated)
 
     def list(self, request):
         queryset = Account.objects.filter(owner=request.user)
@@ -54,8 +55,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
-        queryset = Account.objects.filter(owner=request.user)
-        account = get_object_or_404(queryset, pk=pk)
+        account = self.get_object()
         serializer = AccountSerializer(account, context={"request": request})
 
         return Response(serializer.data)
@@ -66,9 +66,8 @@ class AccountViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
     def update(self, request, pk=None, *args, **kwargs):
-        queryset = Account.objects.filter(owner=request.user)
-        account = get_object_or_404(queryset, pk=pk)
-        super().update(request)
+        super().update(request, *args, **kwargs)
+        account = self.get_object()
         account.password = encrypt_password(request.data["password"])
         account.save()
         serializer = AccountSerializer(account, context={'request': request})
@@ -79,13 +78,10 @@ class AccountViewSet(viewsets.ModelViewSet):
     def decrypt_password(self, request, pk=None):
         user = request.user
         account = self.get_object()
-        if account.owner == user:
-            load = {
-                "status" : status.HTTP_200_OK,
-                "plain_password": decrypt_password(account.password)
-            }
-        else:
-            raise PermissionDenied
+        load = {
+            "status" : status.HTTP_200_OK,
+            "plain_password": decrypt_password(account.password)
+        }
 
         return Response(load)
 
