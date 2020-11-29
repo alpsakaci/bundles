@@ -7,7 +7,8 @@ router.register(r"users", views.UserViewSet)
 router.register(r"accounts", views.AccountViewSet)
 
 urlpatterns = [
-    path("api/", include(router.urls)),
+    path('api/accounts/search/', views.search_account),
     path('api/generate_password/', views.generate_password),
+    path("api/", include(router.urls)),
     path("api-auth/", include("rest_framework.urls")),
 ]

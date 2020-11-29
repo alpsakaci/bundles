@@ -47,7 +47,7 @@ class AccountViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwner, permissions.IsAuthenticated)
 
     def list(self, request):
-        queryset = Account.objects.filter(owner=request.user)
+        queryset = Account.get_user_accounts(request.user)
         serializer = AccountSerializer(
             queryset, many=True, context={"request": request}
         )
@@ -70,7 +70,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         account = self.get_object()
         account.password = encrypt_password(request.data["password"])
         account.save()
-        serializer = AccountSerializer(account, context={'request': request})
+        serializer = AccountSerializer(account, context={"request": request})
 
         return Response(serializer.data)
 
@@ -79,11 +79,19 @@ class AccountViewSet(viewsets.ModelViewSet):
         user = request.user
         account = self.get_object()
         load = {
-            "status" : status.HTTP_200_OK,
-            "plain_password": decrypt_password(account.password)
+            "status": status.HTTP_200_OK,
+            "plain_password": decrypt_password(account.password),
         }
 
         return Response(load)
+
+
+@api_view(["POST"])
+def search_account(request):
+    queryset = Account.search_account(request.user, request.data["query"])
+    serializer = AccountSerializer(queryset, many=True, context={"request": request})
+
+    return Response(serializer.data)
 
 
 @api_view(["POST"])

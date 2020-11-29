@@ -13,6 +13,22 @@ class Account(models.Model):
     def save(self, *args, **kwargs):
         super(Account, self).save(*args, **kwargs)
 
+    @staticmethod
+    def get_user_accounts(user):
+        return (
+            Account.objects.filter(owner=user, is_deleted=False)
+            .order_by("date_created")
+            .reverse()
+        )
+
+    @staticmethod
+    def search_account(user, query):
+        return Account.objects.filter(
+            models.Q(owner=user)
+            & models.Q(is_deleted=False)
+            & (models.Q(service__icontains=query) | models.Q(username__icontains=query))
+        )
+
     def __str__(self):
         return (
             "["
