@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>SecretPass{% block title %}{% endblock %}</title>
+    <link href="{% static "img/secretpass-favicon.ico" %}" rel='icon' type='image/x-icon' />
+    <!-- Custom fonts for this template -->
+    <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" href="{% static "css/mdb.min.css" %}">
+    <script src="{% static "js/secretpass.js" %}"></script>
+</head>
+
+<body>
+    <ul class="nav justify-content-center black lighten-4 py-4 sticky-top text-white">
+        <li class="nav-item">
+            <a class="nav-link text-white" onclick="#">
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-key-fill" fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                </svg>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="#top">
+                <h2>SecretPass</h2>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="/admin/logout/?next=/secretpass/">
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-power" fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M5.578 4.437a5 5 0 1 0 4.922.044l.5-.866a6 6 0 1 1-5.908-.053l.486.875z" />
+                    <path fill-rule="evenodd" d="M7.5 8V1h1v7h-1z" />
+                </svg>
+            </a>
+        </li>
+    </ul>
+
+    {% block body %}
+    {% endblock body %}
+
+</body>
+
+</html>
