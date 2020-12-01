@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>SecretPass{% block title %}{% endblock %}</title>
-    <link href="{% static "img/secretpass-favicon.ico" %}" rel='icon' type='image/x-icon' />
+    <link href="{% static "img/secretpass.ico" %}" rel='icon' type='image/x-icon' />
     <!-- Custom fonts for this template -->
     <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i"
@@ -18,7 +18,6 @@
     <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
     <!-- Material Design Bootstrap -->
     <link rel="stylesheet" href="{% static "css/mdb.min.css" %}">
-    <script src="{% static "js/secretpass.js" %}"></script>
 </head>
 
 <body>
@@ -33,7 +32,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-white" href="#top">
+            <a class="nav-link text-white" href="{% url 'spindex' %}">
                 <h2>SecretPass</h2>
             </a>
         </li>
