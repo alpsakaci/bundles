@@ -27,11 +27,9 @@ def create(request):
             repeat = form.cleaned_data["repeat"]
 
             if password.__eq__(repeat):
-                serializer = AccountSerializer(data=form.cleaned_data)
-                serializer.is_valid(raise_exception=True)
-                viewset = AccountViewSet()
-                viewset.request = request
-                viewset.perform_create(serializer=serializer)
+                Account.create(
+                    owner=request.user, service=service, username=username, password=password
+                )
             else:
                 context = {"form": form}
                 form.add_error("password", "Password does not match.")
