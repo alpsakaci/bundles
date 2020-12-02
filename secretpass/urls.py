@@ -10,6 +10,8 @@ urlpatterns = [
     path("", webviews.index, name="spindex"),
     path("create/", webviews.create, name="spcreate"),
     path("edit/<int:acc_id>/", webviews.edit, name="spedit"),
+    path("movetotrash/<int:acc_id>/", webviews.movetotrash, name="spmovetotrash"),
+    path("delete/<int:acc_id>/", webviews.delete, name="spdelete"),
     path("api/accounts/search/", views.search_account),
     path("api/generate_password/", views.generate_password),
     path("api/", include(router.urls)),

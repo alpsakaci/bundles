@@ -81,6 +81,21 @@ def edit(request, acc_id):
         form = AccountUpdateForm(
             initial={"service": account.service, "username": account.username}
         )
-        context = {"form": form}
+        context = {"form": form, "account_id": account.id}
 
     return render(request, "secretpass/edit.html", context)
+
+
+@login_required(login_url="/admin/login")
+def movetotrash(request, acc_id):
+    Account.move_to_trash(acc_id, request.user)
+
+    return redirect(index)
+
+
+@login_required(login_url="/admin/login")
+def delete(request, acc_id):
+    account = get_object_or_404(Account.objects.filter(id=acc_id, owner=request.user))
+    account.delete()
+
+    return redirect(index)

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from .crypto import encrypt_password, decrypt_password
 
 
@@ -22,6 +23,18 @@ class Account(models.Model):
         account.save()
 
         return account
+
+    @staticmethod
+    def move_to_trash(acc_id, owner):
+        account = get_object_or_404(Account.objects.filter(id=acc_id, owner=owner))
+        account.is_deleted = True
+        account.save()
+
+    @staticmethod
+    def restore(acc_id, owner):
+        account = get_object_or_404(Account.objects.filter(id=acc_id, owner=owner))
+        account.is_deleted = False
+        account.save()
 
     @staticmethod
     def get_user_accounts(user):
