@@ -2,7 +2,9 @@
 
 {% block body %}
 <div class="container mt-4">
-    <h5>Create Account</h5>
+    <h5>Edit Account</h5>
+    <a href="{% url 'spmovetotrash' account_id %}" onclick="return confirm('Account will be moved to trash. Are you sure?');"
+        class="btn btn-danger">Move to Trash</a>
     <div id="accountList">
         <form method="post">
             {% csrf_token %}
