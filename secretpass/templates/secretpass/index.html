@@ -27,7 +27,7 @@
                 <p class="">{{ account.username }}</p>
                 <hr>
             </div>
-            <div class="col-1 text-center"><a href="#" class="btn btn-black btn-sm float-right">Edit</a></div>
+            <div class="col-1 text-center"><a href="{% url 'spedit' account.id %}" class="btn btn-black btn-sm float-right">Edit</a></div>
         </div>
         {% endfor %}
     </div>
