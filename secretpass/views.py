@@ -92,15 +92,3 @@ def search_account(request):
     serializer = AccountSerializer(queryset, many=True, context={"request": request})
 
     return Response(serializer.data)
-
-
-@api_view(["POST"])
-def generate_password(request):
-    characters = string.ascii_letters + string.digits
-    password = ""
-    for i in range(20):
-        if (i + 1) % 7 == 0:
-            password = password + "".join("-")
-        else:
-            password = password + "".join(random.choice(characters))
-    return Response({"password": password})

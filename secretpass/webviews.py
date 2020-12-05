@@ -71,7 +71,7 @@ def edit(request, acc_id):
                 acc.password = encrypt_password(password)
                 acc.save()
             else:
-                context = {"form": form}
+                context = {"form": form, "account_id": acc.id}
                 form.add_error("password", "Password does not match.")
                 return render(request, "secretpass/edit.html", context)
 
