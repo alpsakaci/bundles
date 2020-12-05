@@ -18,7 +18,10 @@ class Account(models.Model):
     @staticmethod
     def create(owner, service, username, password):
         account = Account.objects.create(
-            owner=owner, service=service, username=username, password=encrypt_password(password)
+            owner=owner,
+            service=service,
+            username=username,
+            password=encrypt_password(password),
         )
         account.save()
 
@@ -40,6 +43,14 @@ class Account(models.Model):
     def get_user_accounts(user):
         return (
             Account.objects.filter(owner=user, is_deleted=False)
+            .order_by("date_created")
+            .reverse()
+        )
+
+    @staticmethod
+    def get_trash_items(user):
+        return (
+            Account.objects.filter(owner=user, is_deleted=True)
             .order_by("date_created")
             .reverse()
         )

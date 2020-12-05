@@ -28,7 +28,10 @@ def create(request):
 
             if password.__eq__(repeat):
                 Account.create(
-                    owner=request.user, service=service, username=username, password=password
+                    owner=request.user,
+                    service=service,
+                    username=username,
+                    password=password,
                 )
             else:
                 context = {"form": form}
@@ -99,3 +102,11 @@ def delete(request, acc_id):
     account.delete()
 
     return redirect(index)
+
+
+@login_required(login_url="/admin/login")
+def trash(request):
+    trash_items = Account.get_trash_items(request.user)
+    context = {"accounts": trash_items}
+
+    return render(request, "secretpass/index.html", context)
