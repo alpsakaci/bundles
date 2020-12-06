@@ -12,3 +12,12 @@ function generatePassword() {
 
     return pass;
 }
+
+function togglePasswordGenerator() {
+    var generator = document.getElementById("passwordGenerator")
+    if (generator.style.display === "none") {
+        generator.style.display = "block";
+    } else {
+        generator.style.display = "none";
+    }
+}

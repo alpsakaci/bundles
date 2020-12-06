@@ -1,15 +1,8 @@
 {% extends 'secretpass/base.html' %}
 
 {% block body %}
-<div class="container mt-4">
-    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link" id="pills-new-account" data-toggle="pill" href="{% url 'spcreate' %}" role="tab"
-                aria-controls="pills-profile" aria-selected="false">Create Account</a>
-        </li>
-
-    </ul>
-
+<div class="container mt-1">
+    {% include 'secretpass/searchAccount.html' %}
     <div id="accountList">
         {% for account in accounts %}
         <div class="row account">
@@ -26,7 +19,7 @@
                 </a>
             </div>
         </div>
-        <hr>
+
         {% endfor %}
     </div>
 </div>
