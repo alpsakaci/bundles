@@ -20,8 +20,8 @@ generateEl.addEventListener('click', () => {
     resultEl.value = generatePassword()
 })
 
-function showPassword() {
-    var x = document.getElementById("passwordResult");
+function showPassword(id) {
+    var x = document.getElementById(id);
     if (x.type === "password") {
         x.type = "text";
     } else {
