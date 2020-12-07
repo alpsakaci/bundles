@@ -80,11 +80,10 @@ def edit(request, acc_id):
         account = get_object_or_404(
             Account.objects.filter(id=acc_id, owner=request.user)
         )
-        password = decrypt_password(account.password)
         form = AccountUpdateForm(
             initial={"service": account.service, "username": account.username}
         )
-        context = {"form": form, "account_id": account.id}
+        context = {"form": form, "account": account}
 
     return render(request, "secretpass/edit.html", context)
 
@@ -92,6 +91,13 @@ def edit(request, acc_id):
 @login_required(login_url="/admin/login")
 def movetotrash(request, acc_id):
     Account.move_to_trash(acc_id, request.user)
+
+    return redirect(index)
+
+
+@login_required(login_url="/admin/login")
+def restore(request, acc_id):
+    Account.restore(acc_id, request.user)
 
     return redirect(index)
 
