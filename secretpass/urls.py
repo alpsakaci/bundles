@@ -1,4 +1,5 @@
 from django.urls import include, path
+from django.contrib.auth import views as auth_views
 from rest_framework import routers
 from secretpass import views, webviews
 
@@ -8,6 +9,17 @@ router.register(r"accounts", views.AccountViewSet)
 
 urlpatterns = [
     path("", webviews.index, name="spindex"),
+    path(
+        "login/",
+        auth_views.LoginView.as_view(template_name="secretpass/login.html"),
+        name="splogin",
+    ),
+    path(
+        "logout/",
+        auth_views.LogoutView.as_view(template_name="secretpass/logout.html"),
+        name="splogout",
+    ),
+    path("signup/", webviews.SignUpView.as_view(), name="spsignup"),
     path("create/", webviews.create, name="spcreate"),
     path("edit/<int:acc_id>/", webviews.edit, name="spedit"),
     path("movetotrash/<int:acc_id>/", webviews.movetotrash, name="spmovetotrash"),
