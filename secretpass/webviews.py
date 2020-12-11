@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
-from .models import Account
+from .models import Account, KeyChecker
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
@@ -13,10 +14,15 @@ from .crypto import encrypt_password, decrypt_password
 
 @login_required(login_url="/secretpass/login")
 def index(request):
-    accounts = Account.get_user_accounts(request.user)
-    context = {"accounts": accounts}
+    try:
+        keychecker = KeyChecker.objects.get(owner=request.user)
+        accounts = Account.get_user_accounts(request.user)
+        context = {"accounts": accounts}
 
-    return render(request, "secretpass/index.html", context)
+        return render(request, "secretpass/index.html", context)
+
+    except ObjectDoesNotExist:
+        return render(request, "secretpass/masterkey.html")
 
 
 class SignUpView(generic.CreateView):
@@ -117,7 +123,9 @@ def restore(request, acc_id):
 @login_required(login_url="/secretpass/login")
 def delete(request, acc_id):
     if request.method == "POST":
-        account = get_object_or_404(Account.objects.filter(id=acc_id, owner=request.user))
+        account = get_object_or_404(
+            Account.objects.filter(id=acc_id, owner=request.user)
+        )
         account.delete()
 
     return redirect(index)
