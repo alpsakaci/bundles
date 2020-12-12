@@ -51,6 +51,6 @@ def decrypt_password(password, masterkey):
         cipher = AES.new(masterkey, AES.MODE_GCM, nonce=nonce)
         plaintext = cipher.decrypt_and_verify(ciphertext, tag)
 
-        return plaintext
+        return plaintext.decode("utf-8")
     except:
         return None #TODO: return exception
