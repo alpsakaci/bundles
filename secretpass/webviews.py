@@ -5,24 +5,38 @@ from django.contrib.auth.decorators import login_required
 from .models import Account, KeyChecker
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
+from django.http import HttpResponse
+import json
 from django.views import generic
-from .forms import AccountForm, AccountUpdateForm, UserRegisterForm
+from .forms import (
+    AccountForm,
+    AccountUpdateForm,
+    UserRegisterForm,
+    MasterKeyRegisterForm,
+    SetMasterKeyForm,
+)
 from .views import AccountViewSet
 from .serializers import AccountSerializer
-from .crypto import encrypt_password, decrypt_password
+from .crypto import (
+    encrypt_password,
+    decrypt_password,
+    hash_masterkey,
+    generate_key,
+    check_masterkey,
+    generate_salt,
+)
+from .decorators import keychecker_required, masterkey_required
 
 
 @login_required(login_url="/secretpass/login")
+@keychecker_required
+@masterkey_required
 def index(request):
-    try:
-        keychecker = KeyChecker.objects.get(owner=request.user)
-        accounts = Account.get_user_accounts(request.user)
-        context = {"accounts": accounts}
+    keychecker = KeyChecker.objects.get(owner=request.user)
+    accounts = Account.get_user_accounts(request.user)
+    context = {"accounts": accounts}
 
-        return render(request, "secretpass/index.html", context)
-
-    except ObjectDoesNotExist:
-        return render(request, "secretpass/masterkey.html")
+    return render(request, "secretpass/index.html", context)
 
 
 class SignUpView(generic.CreateView):
@@ -32,6 +46,8 @@ class SignUpView(generic.CreateView):
 
 
 @login_required(login_url="/secretpass/login")
+@keychecker_required
+@masterkey_required
 def create(request):
     if request.method == "POST":
         form = AccountForm(request.POST)
@@ -48,6 +64,9 @@ def create(request):
                     service=service,
                     username=username,
                     password=password,
+                    masterkey=KeyChecker.get_masterkey(
+                        request.user, request.session.get("user_masterkey")
+                    ),
                 )
             else:
                 context = {"form": form}
@@ -63,6 +82,8 @@ def create(request):
 
 
 @login_required(login_url="/secretpass/login")
+@keychecker_required
+@masterkey_required
 def edit(request, acc_id):
     if request.method == "POST":
         form = AccountUpdateForm(request.POST)
@@ -84,7 +105,12 @@ def edit(request, acc_id):
             elif password != "" and password.__eq__(repeat):
                 acc.service = service
                 acc.username = username
-                acc.password = encrypt_password(password)
+                acc.password = encrypt_password(
+                    password,
+                    KeyChecker.get_masterkey(
+                        request.user, request.session.get("user_masterkey")
+                    ),
+                )
                 acc.save()
             else:
                 context = {"form": form, "account_id": acc.id}
@@ -102,6 +128,26 @@ def edit(request, acc_id):
         context = {"form": form, "account": account}
 
     return render(request, "secretpass/edit.html", context)
+
+
+@login_required(login_url="/secretpass/login")
+@keychecker_required
+@masterkey_required
+def decrypt(request, acc_id):
+
+    if request.method == "POST":
+        account = Account.objects.get(owner=request.user, id=acc_id)
+        load = {
+            "plain_password": decrypt_password(
+                account.password,
+                KeyChecker.get_masterkey(
+                    request.user, request.session.get("user_masterkey")
+                ),
+            )
+        }
+        data = json.dumps(load)
+
+        return HttpResponse(data, content_type="application/json")
 
 
 @login_required(login_url="/secretpass/login")
