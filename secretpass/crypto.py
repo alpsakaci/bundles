@@ -22,16 +22,14 @@ def hash_masterkey(masterkey, salt):
 
 
 def check_masterkey(masterkey, salt, hash):
-    hasher = SHA512.new()
-    hasher.update(bytes(masterkey + salt, encoding="utf-8"))
-    if hasher.hexdigest().__eq__(hash):
+    if hash_masterkey(masterkey, salt).__eq__(hash):
         return True
     else:
         return False
 
 
-def generate_masterkey(password, salt):
-    return PBKDF2(password, salt, 16, count=1000000, hmac_hash_module=SHA512)
+def generate_key(masterkey, salt):
+    return PBKDF2(masterkey, salt, 16, count=1000000, hmac_hash_module=SHA512)
 
 
 def encrypt_password(password, masterkey):

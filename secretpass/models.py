@@ -3,17 +3,15 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from .crypto import generate_salt, encrypt_password, decrypt_password
 
+
 class KeyChecker(models.Model):
     owner = models.ForeignKey(User, related_name="keychecker", on_delete=models.CASCADE)
     salt = models.CharField(max_length=24)
     keyhash = models.CharField(max_length=128)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.salt = generate_salt(encode=True)
-
     def __str__(self):
         return "KeyChecker for [" + self.owner.username + "]"
+
 
 class Account(models.Model):
     owner = models.ForeignKey(User, related_name="account", on_delete=models.CASCADE)
