@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import KeyChecker
 from .forms import SetMasterKeyForm, MasterKeyRegisterForm
 from .crypto import generate_key, check_masterkey, generate_salt, hash_masterkey
+import base64
 
 
 def keychecker_required(view_func):
@@ -50,10 +51,8 @@ def masterkey_required(view_func):
                     keychecker = KeyChecker.objects.get(owner=request.user)
 
                     if check_masterkey(masterkey, keychecker.salt, keychecker.keyhash):
-                        request.session["user_masterkey"] = str(
-                            generate_key(masterkey, keychecker.salt)
-                        )
-
+                        request.session["user_masterkey"] = base64.b64encode(generate_key(masterkey, keychecker.salt)).decode('utf-8')
+                        
                         return view_func(request, *args, **kwargs)
                     else:
                         form.add_error("masterkey", "Key is not valid.")
