@@ -26,6 +26,7 @@ from .crypto import (
     generate_salt,
 )
 from .decorators import keychecker_required, masterkey_required
+import base64
 
 
 @login_required(login_url="/secretpass/login")
@@ -141,7 +142,7 @@ def decrypt(request, acc_id):
             "plain_password": decrypt_password(
                 account.password,
                 KeyChecker.get_masterkey(
-                    request.user, request.session.get("user_masterkey")
+                    request.user, base64.b64decode(request.session.get("user_masterkey"))
                 ),
             )
         }
