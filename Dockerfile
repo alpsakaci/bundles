@@ -3,7 +3,6 @@ FROM python:3
 WORKDIR /usr/src/app
 
 COPY requirements.txt .
-COPY secret_key.txt /etc/secret_key.txt
 COPY spPassphrase.txt /etc/spPassphrase.txt
 
 RUN pip install --no-cache-dir -r requirements.txt
