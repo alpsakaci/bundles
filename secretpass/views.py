@@ -103,6 +103,20 @@ class AccountViewSet(viewsets.ModelViewSet):
             raise ParseError(
                 detail="Request does not contain User-Key header.")
 
+    @action(detail=True, methods=["POST"])
+    def move_to_trash(self, request, pk=None):
+        account = self.get_object()
+        Account.move_to_trash(account.id, request.user)
+
+        return Response()
+
+    @action(detail=True, methods=["POST"])
+    def restore_from_trash(self, request, pk=None):
+        account = self.get_object()
+        Account.restore(account.id, request.user)
+
+        return Response()
+
 
 @api_view(["POST"])
 def search_account(request):
