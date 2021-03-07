@@ -5,9 +5,10 @@ from rest_framework import viewsets
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action
+from rest_framework.exceptions import ParseError
 from django.shortcuts import get_object_or_404
-from .models import Account
-from .crypto import encrypt_password, decrypt_password
+from .models import Account, KeyChecker
+from .crypto import encrypt_password, decrypt_password, check_masterkey, generate_key
 from .serializers import UserSerializer, AccountSerializer
 from .permissions import IsOwner
 import string
@@ -62,8 +63,15 @@ class AccountViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         password = serializer.validated_data["password"]
-        serializer.validated_data["password"] = encrypt_password(password)
-        serializer.save(owner=self.request.user)
+        user_key = serializer.validated_data["user_key"]
+
+        if KeyChecker.check_user_key(self.request.user, user_key):
+            masterkey = KeyChecker.get_masterkey(self.request.user, user_key)
+            serializer.validated_data["password"] = encrypt_password(password, masterkey)
+            del serializer.validated_data["user_key"]
+            serializer.save(owner=self.request.user)
+        else:
+            raise ParseError(detail="User key is not valid")
 
     def update(self, request, pk=None, *args, **kwargs):
         super().update(request, *args, **kwargs)
