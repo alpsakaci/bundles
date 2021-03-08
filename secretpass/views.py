@@ -78,13 +78,22 @@ class AccountViewSet(viewsets.ModelViewSet):
                 detail="Request does not contain User-Key header.")
 
     def update(self, request, pk=None, *args, **kwargs):
-        super().update(request, *args, **kwargs)
-        account = self.get_object()
-        account.password = encrypt_password(request.data["password"])
-        account.save()
-        serializer = AccountSerializer(account, context={"request": request})
+        try:
+            user_key = self.request.headers['User-Key']
+            if KeyChecker.check_user_key(self.request.user, user_key):
+                masterkey = KeyChecker.get_masterkey(self.request.user, user_key)
+                super().update(request)
+                account = Account.objects.get(id=pk)
+                account.password = encrypt_password(request.data["password"], masterkey)
+                account.save()
+                serializer = AccountSerializer(account, context={"request": request})
 
-        return Response(serializer.data)
+                return Response(serializer.data)
+            else:
+                raise ParseError(detail="User key is not valid")
+        except KeyError:
+            raise ParseError(
+                detail="Request does not contain User-Key header.")
 
     @action(detail=True, methods=["POST"])
     def decrypt_password(self, request, pk=None):
