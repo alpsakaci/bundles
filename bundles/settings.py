@@ -75,6 +75,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+JWT_AUTH = {
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+}
+
 ROOT_URLCONF = 'bundles.urls'
 
 TEMPLATES = [
