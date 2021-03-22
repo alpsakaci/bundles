@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, action
 from rest_framework.exceptions import ParseError
 from django.shortcuts import get_object_or_404
 from .models import Account, KeyChecker
-from .crypto import encrypt_password, decrypt_password, check_masterkey, generate_key
+from .crypto import encrypt_password, decrypt_password, check_masterkey, generate_key, generate_salt, hash_masterkey
 from .serializers import UserSerializer, AccountSerializer
 from .permissions import IsOwner
 import string
@@ -126,6 +126,28 @@ class AccountViewSet(viewsets.ModelViewSet):
 
         return Response()
 
+@api_view(["POST"])
+def create_userkey(request):
+    try:
+        checker = KeyChecker(owner=request.user)
+        checker.salt = generate_salt(encode=True)
+        checker.keyhash = hash_masterkey(request.data["masterkey"], checker.salt)
+        checker.save()
+
+        return Response({"status" : "successful"})
+    except Exception:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def check_userkey(request):
+    masterkey = request.data["masterkey"]
+    keychecker = KeyChecker.objects.get(owner=request.user)
+
+    if check_masterkey(masterkey, keychecker.salt, keychecker.keyhash):
+        return Response({"isMasterKeyValid" : True });
+    else:
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
 @api_view(["POST"])
 def search_account(request):
