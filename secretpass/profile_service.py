@@ -3,6 +3,7 @@ from Crypto.Random import get_random_bytes
 from base64 import b64encode, b64decode
 from Crypto.Hash import SHA512
 from Crypto.Protocol.KDF import PBKDF2
+from rest_framework.exceptions import ParseError
 
 
 def create_profile(user, master_password):
@@ -34,7 +35,7 @@ def check_master_password(master_password, salt, hash):
     if hash_master_password(master_password, salt).__eq__(hash):
         return True
     else:
-        return False
+        raise ParseError("Master Password is not valid.")
 
 
 def generate_key(master_password, salt):
