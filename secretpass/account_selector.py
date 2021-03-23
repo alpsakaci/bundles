@@ -15,7 +15,7 @@ def get_accounts_in_trash(user):
     return (Account.objects.filter(owner=user, is_deleted=True).order_by("date_created").reverse())
 
 
-def search_account(user, query):
+def search_accounts(user, query):
     query = Q(owner=user) & Q(is_deleted=False) & (
         Q(service__icontains=query) | Q(username__icontains=query))
 
