@@ -24,5 +24,4 @@ services:
       restart: always
 
 volumes:
-    postgres-data:
     staticfiles:
