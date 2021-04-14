@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+    web:
+      container_name: bundles
+      restart: always
+      build: .
+      command: gunicorn bundles.wsgi:application --bind 0.0.0.0:8000 --workers=4
+      volumes:
+        - ./data:/usr/src/app/data
+        - staticfiles:/usr/src/app/staticfiles
+
+    nginx:
+      container_name: nginx
+      image: nginx:mainline-alpine
+      restart: always
+      ports:
+        - 80:80
+      volumes:
+        - staticfiles:/usr/src/app/staticfiles
+        - ./nginx:/etc/nginx/conf.d        
+      depends_on:
+        - web
+      restart: always
+
+volumes:
+    postgres-data:
+    staticfiles:

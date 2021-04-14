@@ -107,3 +107,4 @@ venv.bak/
 media
 .vscode
 bundles/config.py
+data
