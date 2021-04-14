@@ -106,5 +106,4 @@ venv.bak/
 **/.DS_Store
 media
 .vscode
-secret_key.txt
-spPassphrase.txt
+bundles/config.py

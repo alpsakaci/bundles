@@ -1,25 +1,17 @@
 import os
 from pathlib import Path
-import environ
+from bundles.config import DJANGO_SECRET_KEY, DEBUG_MODE, ALLOWED_HOSTS_LIST, DB_PATH
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env()
-# reading .env file
-environ.Env.read_env(env_file=os.path.join(BASE_DIR, ".env"))
+SECRET_KEY = DJANGO_SECRET_KEY
 
+DEBUG = DEBUG_MODE
 
-SECRET_KEY = env("SECRET_KEY")
-
-DEBUG = True
+ALLOWED_HOSTS = ALLOWED_HOSTS_LIST
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
-ALLOWED_HOSTS = []
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -92,7 +84,7 @@ WSGI_APPLICATION = 'bundles.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DB_PATH,
     }
 }
 
